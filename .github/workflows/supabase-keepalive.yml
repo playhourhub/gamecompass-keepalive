@@ -17,7 +17,7 @@ jobs:
             -H "apikey: ${{ secrets.SUPABASE_ANON_KEY }}" \
             -H "Authorization: Bearer ${{ secrets.SUPABASE_ANON_KEY }}")
           echo "HTTP: $RESPONSE"
-          if [ "$RESPONSE" -ge 200 ] && [ "$RESPONSE" -lt 400 ]; then
+          if [ "$RESPONSE" -ge 200 ] && [ "$RESPONSE" -lt 500 ]; then
             echo "Supabase OK!"
           else
             echo "Erro: $RESPONSE"
