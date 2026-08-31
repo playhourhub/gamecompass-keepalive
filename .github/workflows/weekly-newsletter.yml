@@ -1,0 +1,16 @@
+name: Weekly Newsletter Draft
+
+on:
+  schedule:
+    - cron: '0 8 * * 5'
+  workflow_dispatch:
+
+jobs:
+  generate-draft:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Call generate-newsletter function
+        run: |
+          curl -X POST "https://playhourinsider.netlify.app/api/generate-newsletter" \
+            -H "x-cron-secret: ${{ secrets.CRON_SECRET }}" \
+            --fail --silent --show-error
