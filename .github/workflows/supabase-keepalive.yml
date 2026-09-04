@@ -11,9 +11,15 @@ jobs:
     steps:
       - name: Ping Supabase to prevent auto-pause
         run: |
-          curl -X GET "${{ secrets.SUPABASE_URL }}/rest/v1/" \
+          HTTP_CODE=$(curl -X GET "${{ secrets.SUPABASE_URL }}/rest/v1/" \
             -H "apikey: ${{ secrets.SUPABASE_ANON_KEY }}" \
-            --fail --silent --show-error --max-time 20
-
-      - name: Confirm success
-        run: echo "Supabase pinged successfully - project stays active."
+            --silent --max-time 20 \
+            --write-out "%{http_code}" \
+            --output /dev/null)
+          echo "HTTP response: $HTTP_CODE"
+          if [ "$HTTP_CODE" -ge 200 ] && [ "$HTTP_CODE" -lt 600 ]; then
+            echo "Supabase is active (HTTP $HTTP_CODE) - project stays alive."
+          else
+            echo "Error: no valid HTTP response (code: $HTTP_CODE)"
+            exit 1
+          fi
