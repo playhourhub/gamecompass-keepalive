@@ -2,24 +2,18 @@ name: Supabase Keep-Alive
 
 on:
   schedule:
-    - cron: '0 8 * * *'
+    - cron: '0 9 * * *'
   workflow_dispatch:
 
 jobs:
-  keepalive:
+  ping-supabase:
     runs-on: ubuntu-latest
     steps:
-      - name: Ping Supabase
+      - name: Ping Supabase to prevent auto-pause
         run: |
-          echo "A fazer ping ao Supabase..."
-          RESPONSE=$(curl -s -o /dev/null -w "%{http_code}" \
-            "${{ secrets.SUPABASE_URL }}/rest/v1/" \
+          curl -X GET "${{ secrets.SUPABASE_URL }}/rest/v1/" \
             -H "apikey: ${{ secrets.SUPABASE_ANON_KEY }}" \
-            -H "Authorization: Bearer ${{ secrets.SUPABASE_ANON_KEY }}")
-          echo "HTTP: $RESPONSE"
-          if [ "$RESPONSE" -ge 200 ] && [ "$RESPONSE" -lt 500 ]; then
-            echo "Supabase OK!"
-          else
-            echo "Erro: $RESPONSE"
-            exit 1
-          fi
+            --fail --silent --show-error --max-time 20
+
+      - name: Confirm success
+        run: echo "Supabase pinged successfully - project stays active."
